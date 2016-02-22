@@ -1,0 +1,514 @@
+swagger: '2.0'
+info:
+  title: Point of Sale API
+  description: ...
+  version: 1.0.0
+host: ...
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+consumes:
+  - application/json
+parameters:
+  Select:
+    name: select
+    description: >
+      Angabe von einzelnen Properties aus denen die Repräsentation bestehen
+      soll.
+
+      Beispiel: ?select=is_abc,sample_property,new_property
+    in: query
+    required: false
+    type: string
+  Top:
+    name: top
+    description: |
+      Gibt beim Paging die Anzahl der Elemente je Seite an.
+      Beispiel: top=10
+    in: query
+    required: false
+    type: integer
+  Skip:
+    name: skip
+    description: |
+      Gibt beim Paging den Startpunkt für die nächste Seite an.
+      Beispiel: skip=10
+    in: query
+    required: false
+    type: integer
+  Filter:
+    name: filter
+    description: |
+      Angabe eines Filterausdrucks gemäß der OData Filtersyntax.
+      Beispiel: filter=is_cleared eq true and invoice_number eq 10000
+    in: query
+    required: false
+    type: string
+  OrderBy:
+    name: orderby
+    description: |
+      Angabe eines Sortierkriteriums gemäss der odata Ordersyntax
+      Beispiel: orderby=name asc, orderby=last_name desc and first_name asc
+    in: query
+    required: false
+    type: string
+paths:
+  /products:
+    get:
+      summary: Products
+      description: |
+        Get list of available products
+      parameters:
+        - $ref: '#/parameters/Filter'
+        - $ref: '#/parameters/Top'
+        - $ref: '#/parameters/Skip'
+        - $ref: '#/parameters/Select'
+        - $ref: '#/parameters/OrderBy'
+      tags:
+        - Products
+      responses:
+        '200':
+          description: An array of products
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+          headers:
+            Total-Items:
+              description: tbd
+              type: integer
+            Link:
+              description: Additional links for paging.
+              type: string
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /customers:
+    get:
+      summary: Customers
+      description: |
+        Get list of known customers
+      parameters:
+        - $ref: '#/parameters/Filter'
+        - $ref: '#/parameters/Top'
+        - $ref: '#/parameters/Skip'
+        - $ref: '#/parameters/Select'
+        - $ref: '#/parameters/OrderBy'
+      tags:
+        - Customers
+      responses:
+        '200':
+          description: An array of products
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Customer'
+          headers:
+            Total-Items:
+              description: tbd
+              type: integer
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: tbd
+      description: tbd
+      parameters:
+        - name: customer
+          in: body
+          schema:
+            $ref: '#/definitions/Customer'
+      tags:
+        - Customers            
+      responses:
+        '201':
+          description: tbd
+          schema:
+            $ref: '#/definitions/Customer'
+          headers:
+            Location:
+              description: tbd
+              type: string
+        '422':
+          description: tbd
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  '/customers/{customer-id}':
+    get:
+      summary: tbd
+      description: tbd
+      parameters:
+        - name: customer-id
+          description: tbd
+          in: path
+          required: true
+          type: integer
+          format: int64
+      tags:
+        - Customers
+      responses:
+        '204':
+          description: single customer
+          schema:
+            $ref: '#/definitions/Customer'
+          headers:
+            Location:
+              description: ...
+              type: string
+  '/customers/{customer-id}/image':
+    put:
+      summary: tbd
+      description: tbd
+      consumes: 
+        - multipart/form-data
+      operationId: putCustomerImage
+      parameters:
+        - name: customer-id
+          description: tbd
+          in: path
+          required: true
+          type: integer
+          format: int64
+        - name: image
+          in: formData
+          type: file
+      tags:
+        - Customers
+      responses:
+        '204':
+          description: | 
+            Upload of the picture was successful. No content will be returned.
+          schema:
+            type: file
+          headers:
+            Location:
+              description: Self Link to the 
+              type: string
+
+  /shopping-carts:
+    get:
+      summary: tbd
+      description: tbd
+      parameters:
+        - $ref: '#/parameters/Filter'
+        - $ref: '#/parameters/Top'
+        - $ref: '#/parameters/Skip'
+        - $ref: '#/parameters/Select'
+        - $ref: '#/parameters/OrderBy'   
+      tags:
+        - ShoppingCart         
+      responses:
+        '200':
+          description: ...
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ShoppingCart'   
+          headers:
+            Total-Items:
+              description: tbd
+              type: integer
+            Link:
+              description: Additional links for paging.
+              type: string              
+              
+    post:
+      summary: tbd
+      description: tbd
+      parameters:
+        - name: customer
+          in: body
+          schema:
+            $ref: '#/definitions/Customer'
+      tags:
+        - ShoppingCart                 
+      responses:
+        '204':
+          description: Shopping Cart successfully created.
+          headers:
+            Location:
+              description: Returns the URI of the newly created empty shopping cart.
+              type: string
+        '422':
+          description: tbd
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+            
+  /shopping-carts/{cart-id}:
+    get:
+      summary: tbd
+      description: tbd
+      parameters:
+        - name: cart-id
+          description: tbd
+          in: path
+          required: true
+          type: integer
+          format: int64
+        - name: expand
+          description: ...
+          in: query
+          type: string
+      tags:
+        - ShoppingCart               
+      responses:
+        '200':
+          description: tbd
+          schema:
+            $ref: '#/definitions/ShoppingCart'
+        '404':
+          description: tbd
+
+  /shopping-carts/{cart-id}/line-items:
+
+    post:
+      summary: ...
+      description: ...
+      parameters:
+        - name: cart-id
+          description: tbd
+          in: path
+          required: true
+          type: integer
+          format: int64      
+        - name: line-item
+          description: ...
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ShoppingCartNewLineItem'
+      tags:
+        - ShoppingCart                 
+      responses:
+        '204':
+          description: ...
+          headers:
+            Location:
+              description: Self Link to the ressource
+              type: string
+  
+  /shopping-carts/{cart-id}/line-items/{line-item-id}:
+    put:
+      summary: Partial Update
+      description: ...
+      consumes: 
+        - 'application/merge-patch+json'
+      parameters:
+        - name: cart-id
+          description: tbd
+          in: path
+          required: true
+          type: integer
+          format: int64  
+        - name: line-item-id
+          description: tbd
+          in: path
+          required: true
+          type: integer
+          format: int64 
+        - name: line-item
+          description: ...
+          in: body
+          schema:
+            $ref: '#/definitions/ShoppingCartUpdateLineItem'
+      tags:
+        - ShoppingCart                 
+      responses:
+        '204':
+          description: ...
+          headers:
+            Location:
+              description: Self Link to the ressource
+              type: string                 
+definitions:
+
+  Product:
+    type: object
+    required:
+      - sku
+      - display_name
+      - base_price
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: tbd
+      sku:
+        type: string
+        description: tbd
+        pattern: '[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]'
+      display_name:
+        type: string
+        description: Display name of product.
+      base_price:
+        type: number
+        format: float
+      vat_rate:
+        type: number
+        format: float
+        default: 0.19
+
+  Customer:
+    type: object
+    required:
+      - first_name
+      - last_name
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: tbd
+      first_name:
+        type: string
+        description: tbd
+      last_name:
+        type: string
+        description: tbd
+      street:
+        type: string
+        description: tbd
+      postal_code:
+        type: string
+        description: tbd
+      city:
+        type: string
+        description: tbd
+      image_link:
+        type: string
+        description: URL todo absolut vs relativ
+  
+  ShoppingCart:
+    type: object
+    required:
+      - id
+      - total_amount
+      - creation_time
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: tbd
+      line_items:
+        type: array
+        items:
+          $ref: '#/definitions/ShoppingCartLineItem'
+      order_time:
+        type: string
+        format: date-time
+        description: tbd
+      creation_time:
+        type: string
+        format: date-time
+        description: tbd
+      total_amount:
+        type: number
+        format: float
+        description: tbd
+      customer:
+        $ref: '#/definitions/Customer'
+
+  ShoppingCartNewLineItem:
+    type: object
+    required:
+      - quantity
+      - product
+    properties:
+      quantity:
+        type: integer
+        format: int32
+        description: tbd
+      product:
+        $ref: '#/definitions/Product'
+
+  ShoppingCartUpdateLineItem:
+    type: object
+    properties:
+      quantity:
+        type: integer
+        format: int32
+        description: tbd
+      gross_price:
+        type: number
+        format: float
+        description: tbd
+      net_price:
+        type: number
+        format: float
+        description: tbd
+
+  ShoppingCartLineItem:
+    type: object
+    required:
+      - id
+      - quantity
+      - gross_price
+      - net_price
+      - product
+    properties:
+      id:
+        type: integer
+        format: int64
+        description: tbd
+      quantity:
+        type: integer
+        format: int32
+        description: tbd
+      gross_price:
+        type: number
+        format: float
+        description: tbd
+      net_price:
+        type: number
+        format: float
+        description: tbd
+      product:
+        $ref: '#/definitions/Product'
+  Error:
+    type: object
+    required:
+      - error
+    properties:
+      error:
+        type: string
+      error_description:
+        type: string
+      error_uri:
+        type: string
+      request_id:
+        type: string
+      additional_messages:
+        type: array
+        items:
+          $ref: '#/definitions/AdditionalMessage'
+  AdditionalMessage:
+    type: object
+    required:
+      - id
+      - severity
+    properties:
+      id:
+        type: string
+      description:
+        type: string
+      severity:
+        type: string
+        enum:
+          - error
+          - warning
+          - information
+      help_uri:
+        type: string
+      path:
+        type: string

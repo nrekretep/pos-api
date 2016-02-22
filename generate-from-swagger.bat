@@ -1,0 +1,1 @@
+java -cp lib\jaxrs-vanilla-server-codegen-1.0.0.jar;lib\swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen  generate -i pos.yml -l jaxrs-vanilla -o src\main -c swagger-codegen-config.json

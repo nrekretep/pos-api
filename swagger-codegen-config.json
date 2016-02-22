@@ -1,0 +1,11 @@
+{
+    "title":"Point of Sale API Sample",
+    "sourceFolder":"src\\main",
+    "artifactVersion":"0.1",
+    "artifactId":"pos-api",
+    "groupId":"samples",
+    "invokerPackage":"net.nomagic.pos",
+    "apiPackage":"net.nomagic.pos.api",
+    "modelPackage":"net.nomagic.pos.api.models"
+    
+}
